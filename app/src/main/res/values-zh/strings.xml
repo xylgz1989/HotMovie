@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">热门电影</string>
+    <string name="action_settings">设置</string>
+    <string name="action_refresh">刷新</string>
+    <string name="no_available_network">无可用的网络</string>
+
+    <string name="acty_detail">电影详情</string>
+    <string name="dialog_query_movie">正在查询电影，请稍后</string>
+    <string name="pref_sort_label">排序方式</string>
+    <string-array name="pref_sort_arrays">
+        <item>最受欢迎</item>
+        <item>最高评分</item>
+    </string-array>
+
+    <string name="pref_lang_label">语言</string>
+</resources>
