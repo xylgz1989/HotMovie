@@ -2,6 +2,7 @@ package com.example.xyl.hotmovie;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.xyl.tool.NetworkTool;
 import com.xyl.tool.PreferenceTool;
+import com.xyl.tool.asyncInterface.AsyncTaskCompleteListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +46,7 @@ import java.util.List;
 public class MainFragment extends Fragment implements AdapterView.OnItemClickListener {
     private GridView gv_main;
     private static final String TAG = "MainFragment";
+    private ProgressDialog pd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onStart() {
         super.onStart();
-        if(gv_main.getAdapter() == null)
         refreshMovieInfos();
     }
 
@@ -70,7 +72,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.action_settings:
-Intent itn = new Intent(getActivity(),SettingActivity.class);
+                Intent itn = new Intent(getActivity(),SettingActivity.class);
                 startActivity(itn);
                 return true;
             case R.id.action_refresh:
@@ -82,8 +84,12 @@ Intent itn = new Intent(getActivity(),SettingActivity.class);
 
     private void refreshMovieInfos() {
         if(NetworkTool.isOnline(getActivity())){
-            GetMovieTask task = new GetMovieTask();
+            GetMovieTask task = new GetMovieTask(
+                    getActivity(),new FetchMovieTaskCompleteListener());
             task.execute("");
+            pd = new ProgressDialog(getActivity());
+            pd.setMessage(getString(R.string.dialog_query_movie));
+            pd.show();
         }else{
             Toast.makeText(getActivity(), R.string.no_available_network,
                     Toast.LENGTH_SHORT).show();
@@ -108,17 +114,7 @@ Intent itn = new Intent(getActivity(),SettingActivity.class);
         startActivity(itn);
     }
 
-
-
-    class GetMovieTask extends AsyncTask<String,Void,String>{
-        private ProgressDialog pd;
-        final String LANGUAGE_PARAM = "language";
-        final String KEY_PARAM = "api_key";
-        String queryType = null;
-        String languageValue = null;
-        private HttpURLConnection urlConnection;
-        private String movieInfoJson;
-        private BufferedReader reader;
+    class FetchMovieTaskCompleteListener implements AsyncTaskCompleteListener{
 
         final String MOVIES_RESULT = "results";
         final String POSTER_PATH = "poster_path";
@@ -127,76 +123,17 @@ Intent itn = new Intent(getActivity(),SettingActivity.class);
         final String RATED_AVER = "vote_average";
         final String OVERVIEW = "overview";
 
-
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            queryType = PreferenceTool.getString(getActivity(),getString(
-                    R.string.pref_sort_key),getString(R.string.pref_sort_value_popular));
-            languageValue = PreferenceTool.getString(getActivity(),getString(
-                    R.string.pref_lang_key),getString(R.string.pref_lang_value_default));
-
-            pd = new ProgressDialog(getActivity());
-            pd.setMessage(getString(R.string.dialog_query_movie));
-            pd.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            Uri builtUri = Uri.parse(BuildConfig.MOVIEDB_BASE_URL).buildUpon().
-                    appendPath(queryType).
-                    appendQueryParameter(LANGUAGE_PARAM,languageValue).
-                    appendQueryParameter(KEY_PARAM,BuildConfig.MOVIEDB_API_KEY).
-                    build();
-
-            try {
-                URL url = new URL(builtUri.toString()/*.concat(apiKey)*/);
-                Log.w(TAG,"build url="+builtUri.toString());
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    movieInfoJson = null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    movieInfoJson = null;
-                }
-                movieInfoJson = buffer.toString();
-                Log.v(TAG,"movie info json="+ movieInfoJson);
-                return movieInfoJson;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        public void onTaskComplete(Object result) {
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
             List<MovieBean> movies = null;
             try {
-                movies = parseMovieInfoFromJson(s);
+                if(result instanceof String){
+                    String jsonStr = (String) result;
+                    movies = parseMovieInfoFromJson(jsonStr);
+                }
             } catch (JSONException e) {
                 Log.e(TAG,"parse json failed",e);
             }
@@ -204,6 +141,11 @@ Intent itn = new Intent(getActivity(),SettingActivity.class);
                 BaseAdapter adapter = new MovieAdapter(getActivity(),movies);
                 gv_main.setAdapter(adapter);
             }
+        }
+
+        @Override
+        public void onTaskFailed() {
+
         }
 
         private List<MovieBean> parseMovieInfoFromJson(String jsonStr) throws JSONException {

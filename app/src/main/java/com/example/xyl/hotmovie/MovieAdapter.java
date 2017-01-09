@@ -44,7 +44,7 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MainViewHolder holder = null;
+        MainViewHolder holder /*= null*/;
         if(convertView == null){
             holder = new MainViewHolder();
             convertView = LayoutInflater.from(mCtx).inflate(R.layout.item_main,parent,false);
@@ -59,7 +59,7 @@ public class MovieAdapter extends BaseAdapter {
         sbuf.append(posterUrl);
         Log.v("MovieAdapter","poster url="+sbuf.toString());
         Picasso.with(mCtx)
-                .load(sbuf.toString())
+                .load(sbuf.toString()).fit()
                 .placeholder(R.mipmap.ic_launcher)
                 .into(holder.iv_poster, new Callback() {
                     @Override
