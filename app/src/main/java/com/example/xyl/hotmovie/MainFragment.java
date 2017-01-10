@@ -57,7 +57,17 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onStart() {
         super.onStart();
-        refreshMovieInfos();
+        boolean sortPrefChanged = PreferenceTool.getBoolean(getActivity(),
+                getString(R.string.sort_pref_changed),false);
+        // sort order has changed or the movies list is empty
+        if(sortPrefChanged || gv_main.getAdapter() == null) {
+            // fetch the movie list
+            refreshMovieInfos();
+            PreferenceTool.setBoolean(getActivity(),getString(
+                    R.string.sort_pref_changed),false);
+        } else {
+            // do nothing
+        }
     }
 
     @Override

@@ -8,6 +8,8 @@
 
     <string name="dialog_query_movie">Loading movie infos</string>
 
+    <string name="sort_pref_changed" translatable="false">sort pref changed</string>
+
     <string name="pref_sort_label">Movie Sort By</string>
     <string name="pref_sort_key" translatable="false">movie rate</string>
     <string name="pref_sort_value_popular" translatable="false">popular</string>

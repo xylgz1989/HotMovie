@@ -6,6 +6,9 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.xyl.tool.PreferenceTool;
 
 /**
  * Setting Activity for hot movie app
@@ -19,19 +22,15 @@ public class SettingActivity extends PreferenceActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_general);
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sort_key)));
+       // bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sort_key)));
+        ListPreference sortPref = (ListPreference) findPreference(getString(R.string.pref_sort_key));
+        sortPref.setSummary(sortPref.getEntry());
+        sortPref.setOnPreferenceChangeListener(this);
     }
 
     private void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
     }
 
     @Override
@@ -43,6 +42,7 @@ public class SettingActivity extends PreferenceActivity implements
             // the preference's 'entries' list (since they have separate labels/values).
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(stringValue);
+            PreferenceTool.setBoolean(this,getString(R.string.sort_pref_changed),true);
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
