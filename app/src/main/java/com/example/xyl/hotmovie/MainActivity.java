@@ -1,9 +1,8 @@
 package com.example.xyl.hotmovie;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
@@ -15,4 +14,8 @@ public class MainActivity extends Activity {
                 new MainFragment()).commit();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }

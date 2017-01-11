@@ -2,10 +2,7 @@ package com.example.xyl.hotmovie;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -29,12 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +64,9 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        super.onCreateOptionsMenu(menu, inflater);
+        if (menu != null) {
+            menu.clear();
+        }
         inflater.inflate(R.menu.menu_main,menu);
     }
 
@@ -179,4 +173,6 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
             return null;
         }
     }
+
+
 }
