@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
     private GridView gv_main;
     private static final String TAG = "MainFragment";
     private ProgressDialog pd;
+    private List<MovieBean> movies;
+    public static final String DATA = "data";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,13 +54,16 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
         boolean sortPrefChanged = PreferenceTool.getBoolean(getActivity(),
                 getString(R.string.sort_pref_changed),false);
         // sort order has changed or the movies list is empty
-        if(sortPrefChanged || gv_main.getAdapter() == null) {
+        if(sortPrefChanged || gv_main.getAdapter() == null || movies == null) {
             // fetch the movie list
             refreshMovieInfos();
             PreferenceTool.setBoolean(getActivity(),getString(
                     R.string.sort_pref_changed),false);
         } else {
-            // do nothing
+            if(movies != null){
+                BaseAdapter adapter = new MovieAdapter(getActivity(),movies);
+                gv_main.setAdapter(adapter);
+            }
         }
     }
 
@@ -106,7 +112,25 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
         View mView = inflater.inflate(R.layout.fragment_main,container,false);
         gv_main = (GridView) mView.findViewById(R.id.gv_main);
         gv_main.setOnItemClickListener(this);
+        if(savedInstanceState != null &&
+                savedInstanceState.getSerializable(DATA) != null){
+            movies = (List<MovieBean>) savedInstanceState.getSerializable(DATA);
+        }
         return mView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(movies != null){
+            outState.putSerializable(DATA,(Serializable) movies);
+        }
+//        gv_main.get
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 
     @Override
@@ -132,7 +156,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemClickLis
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
-            List<MovieBean> movies = null;
+            movies = null;
             try {
                 if(result instanceof String){
                     String jsonStr = (String) result;
