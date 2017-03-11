@@ -1,13 +1,11 @@
-package com.example.xyl.hotmovie;
+package com.example.xyl.hotmovie.setting;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.preference.PreferenceActivity;
 
+import com.example.xyl.hotmovie.R;
 import com.xyl.tool.PreferenceTool;
 
 /**

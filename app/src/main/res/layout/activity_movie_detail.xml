@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:fillViewport="true"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,6 +52,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/main_content"/>
+
+            <TextView
+                android:id="@+id/tv_run_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/main_content"/>
+            <com.like.LikeButton
+                android:id="@+id/btn_like"
+                android:gravity="left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -66,12 +79,39 @@
             android:layout_marginBottom="@dimen/fab_margin"
             android:visibility="gone"
             android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_trailer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_tab_height">
+
+        </android.support.v7.widget.RecyclerView>
+        <!--<android.support.v4.app.FragmentTabHost-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
+
+        <!--</android.support.v4.app.FragmentTabHost>-->
+        <com.gigamole.navigationtabstrip.NavigationTabStrip
+            android:id="@+id/tab_frags"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_tab_height" />
         <TextView
             android:id="@+id/tv_introduce"
             android:textSize="@dimen/main_content"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:id="@+id/container_detail"
+            android:layout_width="match_parent"
+            android:visibility="visible"
+            android:layout_height="wrap_content">
+
+        </FrameLayout>
+
+
     </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

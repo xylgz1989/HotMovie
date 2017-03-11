@@ -2,14 +2,21 @@
     <string name="app_name">热门电影</string>
     <string name="action_settings">设置</string>
     <string name="action_refresh">刷新</string>
+    <string name="action_like">喜欢</string>
     <string name="no_available_network">无可用的网络</string>
+    <string name="no_data">暂无数据，请刷新</string>
+    <string name="overview">简介</string>
+    <string name="comments">评论 </string>
+    <string name="cannot_connect_server">暂时连不上服务器</string>
 
     <string name="acty_detail">电影详情</string>
     <string name="dialog_query_movie">正在查询电影，请稍后</string>
     <string name="pref_sort_label">排序方式</string>
+    <string name="unit_minute">分钟</string>
     <string-array name="pref_sort_arrays">
         <item>最受欢迎</item>
         <item>最高评分</item>
+        <item>收藏</item>
     </string-array>
 
     <string name="pref_lang_label">语言</string>

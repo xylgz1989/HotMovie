@@ -1,6 +1,4 @@
-package com.example.xyl.hotmovie;
-
-import android.widget.ImageView;
+package com.example.xyl.hotmovie.entity;
 
 import java.io.Serializable;
 
@@ -22,6 +20,18 @@ public class MovieBean implements Serializable {
     private float score;
     /**海报图片的地址*/
     private String posterUrl;
+    /**电影ID*/
+    private int movieId;
+    /**在数据库内的ID*/
+    private int insertId;
+
+    public int getInsertId() {
+        return insertId;
+    }
+
+    public void setInsertId(int insertId) {
+        this.insertId = insertId;
+    }
 
     public String getFirstShowTime() {
         return firstShowTime;
@@ -72,6 +82,14 @@ public class MovieBean implements Serializable {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(int id) {
+        this.movieId = id;
     }
 
     @Override

@@ -1,10 +1,12 @@
-package com.example.xyl.hotmovie;
+package com.example.xyl.hotmovie.mainlist;
 
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.example.xyl.hotmovie.R;
 
 public class MainActivity extends Activity {
 

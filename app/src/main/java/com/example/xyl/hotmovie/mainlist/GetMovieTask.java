@@ -1,4 +1,4 @@
-package com.example.xyl.hotmovie;
+package com.example.xyl.hotmovie.mainlist;
 
 import android.content.Context;
 import android.net.Uri;
@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.xyl.hotmovie.BuildConfig;
+import com.example.xyl.hotmovie.R;
 import com.xyl.tool.PreferenceTool;
 import com.xyl.tool.asyncInterface.AsyncTaskCompleteListener;
 
@@ -16,6 +18,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * the AsyncTask to get movie infos
  * Created by xyl on 2017/1/9 0009.
@@ -23,8 +27,9 @@ import java.net.URL;
 
 public class GetMovieTask extends AsyncTask<String,Void,String>{
 
-    final String LANGUAGE_PARAM = "language";
-    final String KEY_PARAM = "api_key";
+    public final String LANGUAGE_PARAM = "language";
+    public final String KEY_PARAM = "api_key";
+    public static final String PAGE = "page";
     String queryType = null;
     String languageValue = null;
     private HttpURLConnection urlConnection;
@@ -47,13 +52,18 @@ public class GetMovieTask extends AsyncTask<String,Void,String>{
                 R.string.pref_lang_key),mCtx.getString(R.string.pref_lang_value_default));
     }
 
+
+    //    https://api.themoviedb.org/3/movie/top_rated?api_key=<<api_key>>&language=en-US&page=1
     @Override
     protected String doInBackground(String... params) {
-        Uri builtUri = Uri.parse(BuildConfig.MOVIEDB_BASE_URL).buildUpon().
+        Uri.Builder uriBuilder = Uri.parse(BuildConfig.MOVIEDB_BASE_URL).buildUpon().
                 appendPath(queryType).
                 appendQueryParameter(LANGUAGE_PARAM,languageValue).
-                appendQueryParameter(KEY_PARAM,BuildConfig.MOVIEDB_API_KEY).
-                build();
+                appendQueryParameter(KEY_PARAM,BuildConfig.MOVIEDB_API_KEY);
+        if (params != null && !TextUtils.isEmpty(params[0])) {
+            uriBuilder.appendQueryParameter(PAGE,params[0]);
+        }
+        Uri builtUri = uriBuilder.build();
 
         try {
             URL url = new URL(builtUri.toString()/*.concat(apiKey)*/);
@@ -85,7 +95,7 @@ public class GetMovieTask extends AsyncTask<String,Void,String>{
                 movieInfoJson = null;
             }
             movieInfoJson = buffer.toString();
-//                Log.v(TAG,"movie info json="+ movieInfoJson);
+            Log.v(TAG,"movie info json="+ movieInfoJson);
             return movieInfoJson;
         } catch (IOException e) {
             e.printStackTrace();
