@@ -20,7 +20,7 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'MOVIEDB_BASE_URL', "\"http://api.themoviedb.org/3/movie/\"";
-        it.buildConfigField 'String', 'MOVIEDB_API_KEY', "\"490d343f06a332514a3f8449d2581dcb\"";
+        it.buildConfigField 'String', 'MOVIEDB_API_KEY', yourMovieDBAPIKey;
         it.buildConfigField 'String', 'MOVIEDB_POSTER_BASE_URL', "\"http://image.tmdb.org/t/p/\""
     }
 }
