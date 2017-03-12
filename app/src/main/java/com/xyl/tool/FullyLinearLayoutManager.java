@@ -13,7 +13,7 @@ import com.example.xyl.hotmovie.BuildConfig;
 import java.lang.reflect.Field;
 
 /**
- * Created by xyl on 2017/3/6 0006.
+ * see http://www.cnblogs.com/woaixingxing/p/6098726.html
  */
 
 public class FullyLinearLayoutManager extends LinearLayoutManager {
