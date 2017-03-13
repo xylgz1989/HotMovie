@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -12,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.xyl.hotmovie.MainActivity"
+            android:name="com.example.xyl.hotmovie.mainlist.MainActivity"
             android:launchMode="singleTop"
             android:label="@string/app_name"
             android:configChanges="orientation|screenSize"
@@ -23,21 +24,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetailActivity"
+        <activity android:name=".detail.MovieDetailActivity"
             android:label="@string/acty_detail"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".mainlist.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity"/>>
+                android:value=".mainlist.MainActivity"/>>
 
         </activity>
-        <activity android:name=".SettingActivity"
+        <activity android:name=".setting.SettingActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".mainlist.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity"/>
+                android:value=".mainlist.MainActivity"/>
         </activity>
+        <provider
+            android:authorities="com.example.xyl.hotmovie"
+            android:name=".data.MovieProvider"/>
     </application>
 
 </manifest>
