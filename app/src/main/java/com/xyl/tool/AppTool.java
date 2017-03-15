@@ -18,13 +18,7 @@ public class AppTool {
             packageInfo = null;
             e.printStackTrace();
         }
-        if(packageInfo ==null){
-            //System.out.println("没有安装");
-            return false;
-        }else{
-            //System.out.println("已经安装");
-            return true;
-        }
+        return packageInfo != null;
     }
 
 

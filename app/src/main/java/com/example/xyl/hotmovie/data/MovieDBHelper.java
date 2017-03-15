@@ -34,11 +34,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                 " );";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
-
-        //Question:
-        //1.should we create a table to save movie reviews?
-        //2.should we create a table to save movie related videos json or entity?
-        //3.?
     }
 
     @Override

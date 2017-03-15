@@ -69,8 +69,8 @@ public class FileUtil {
                     return;
                 }
 
-                for (int i = 0; i < childFiles.length; i++) {
-                    deleteDir(childFiles[i]);
+                for (File childFile : childFiles) {
+                    deleteDir(childFile);
                 }
                 directory.delete();
             }

@@ -1,8 +1,10 @@
 package com.example.xyl.hotmovie.detail.comment;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.xyl.tool.DividerItemDecoration;
 import com.xyl.tool.FullyLinearLayoutManager;
 import com.xyl.tool.asyncInterface.AsyncTaskCompleteListener;
 
@@ -35,6 +38,7 @@ import java.util.List;
  * Created by xyl on 2017/3/2 0002.
  */
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     //    private SwipeRefreshLayout mSwipeRefreshWidget;
@@ -58,13 +62,15 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         return mView;
     }
 
-    //see http://blog.csdn.net/dalancon/article/details/46125667
-
     @Override
     public void onStart() {
         super.onStart();
-        if(getArguments() != null){
-            movieId = getArguments().getInt(getString(R.string.movie_id_key));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if(getArguments() != null){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    movieId = getArguments().getInt(getString(R.string.movie_id_key));
+                }
+            }
         }
 //        mSwipeRefreshWidget.setOnRefreshListener(this);
 
@@ -75,12 +81,16 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 //        mSwipeRefreshWidget.setProgressViewOffset(false, 0, (int) TypedValue
 //                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources()
 //                        .getDisplayMetrics()));
-        pd = new ProgressDialog(getActivity());
-        pd.setMessage("loading comments");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            pd = new ProgressDialog(getActivity());
+        }
+        pd.setMessage(getString(R.string.loading_comments));
         pd.show();
-        new GetMovieReviewsTask(new OnCommentsRefreshedListener()).
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                        String.valueOf(movieId),String.valueOf(currentPage));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new GetMovieReviewsTask(new OnCommentsRefreshedListener()).
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                            String.valueOf(movieId),String.valueOf(currentPage));
+        }
     }
 
     @Override
@@ -121,19 +131,25 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     Log.i(TAG, "onTaskComplete: new comments size="+newComments.size());
                     comments.addAll(newComments);
                     CommentAdapter commentAdapter = new CommentAdapter(comments);
-                    rv_comments.setAdapter(commentAdapter);
-                    LinearLayoutManager layoutManager = new FullyLinearLayoutManager(getActivity());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                        rv_comments.setAdapter(commentAdapter);
+                    }
+                    LinearLayoutManager layoutManager = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        layoutManager = new FullyLinearLayoutManager(getActivity());
+                    }
+                    if (layoutManager == null) throw new AssertionError();
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 //
-//                    layoutManager.setSmoothScrollbarEnabled(true);
-//                    layoutManager.setAutoMeasureEnabled(true);
-                    rv_comments.setLayoutManager(layoutManager);
-//                    rv_comments.setHasFixedSize(true);
-//                    rv_comments.setNestedScrollingEnabled(false);
-//                    HeaderStormItemDiratcion diraction = new HeaderStormItemDiratcion(1);
-//                    rv_comments.addItemDecoration(diraction);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                        rv_comments.setLayoutManager(layoutManager);
+                        DividerItemDecoration dividerLine = new DividerItemDecoration(
+                                DividerItemDecoration.VERTICAL);
+                        dividerLine.setSize(1);
+                        dividerLine.setColor(0xFFDDDDDD);
+                        rv_comments.addItemDecoration(dividerLine);
+                    }
 
-                    rv_comments.getAdapter().notifyDataSetChanged();
                 }catch (JSONException jsonExc){
                     jsonExc.printStackTrace();
                 }
@@ -144,7 +160,9 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         @Override
         public void onTaskFailed() {
             if(pd != null)pd.dismiss();
-            Toast.makeText(getActivity(),R.string.cannot_connect_server,Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                Toast.makeText(getActivity(),R.string.cannot_connect_server,Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

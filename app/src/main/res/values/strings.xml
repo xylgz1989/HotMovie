@@ -12,6 +12,7 @@
     <string name="unit_minute">minute</string>
     <string name="no_data">the data you want does not exist,please refresh</string>
     <string name="cannot_connect_server">server cannot connect now</string>
+    <string name="loading_comments">loading comments</string>
 
     <string name="sort_pref_changed" translatable="false">sort pref changed</string>
     <string name="overview">overview</string>

@@ -58,8 +58,7 @@ public class CommentAdapter extends /*BaseAdapter */ RecyclerView.Adapter<Commen
     public CommentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.item_comment,parent,false);
-        CommentAdapter.ViewHolder holder = new CommentAdapter.ViewHolder(view);
-        return holder;
+        return new ViewHolder(view);
     }
 
     @Override

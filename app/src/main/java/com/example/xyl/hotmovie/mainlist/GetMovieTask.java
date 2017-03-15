@@ -32,9 +32,6 @@ public class GetMovieTask extends AsyncTask<String,Void,String>{
     public static final String PAGE = "page";
     String queryType = null;
     String languageValue = null;
-    private HttpURLConnection urlConnection;
-    private String movieInfoJson;
-    private BufferedReader reader;
     private Context mCtx;
     private AsyncTaskCompleteListener atcLis;
 
@@ -69,25 +66,26 @@ public class GetMovieTask extends AsyncTask<String,Void,String>{
             URL url = new URL(builtUri.toString()/*.concat(apiKey)*/);
 //            Log.w(TAG,"build url="+builtUri.toString());
             // Create the request to OpenWeatherMap, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
+            String movieInfoJson;
             if (inputStream == null) {
                 // Nothing to do.
                 movieInfoJson = null;
             }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = reader.readLine()) != null) {
                 // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                 // But it does make debugging a *lot* easier if you print out the completed
                 // buffer for debugging.
-                buffer.append(line + "\n");
+                buffer.append(line).append("\n");
             }
 
             if (buffer.length() == 0) {

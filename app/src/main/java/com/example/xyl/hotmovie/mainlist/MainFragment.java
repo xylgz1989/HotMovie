@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -118,13 +119,14 @@ public class MainFragment extends Fragment implements
         boolean isOnline = NetworkTool.isOnline(getActivity());
         boolean isLikeType = type.equals(getResources().getString(R.string.pref_sort_value_favourite));
         if(isOnline && !isLikeType){
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             GetMovieTask task = new GetMovieTask(
                     getActivity(),new FetchMovieTaskCompleteListener());
             task.execute("");
             pd = new ProgressDialog(getActivity());
             pd.setMessage(getString(R.string.dialog_query_movie));
             pd.show();
-        }else if(isLikeType || !isOnline){
+        }else{
             getLoaderManager().restartLoader(MOVIES_LOADER,null,this);
         }
     }
@@ -150,6 +152,7 @@ public class MainFragment extends Fragment implements
         }
         Cursor cur = getActivity().getContentResolver().query(typeUri,projection,selection,
                 selectionArgs, sortOrder);
+        cur.close();
         movieAdapter = new MovieAdapter(getActivity(),cur,0);
         View mView = inflater.inflate(R.layout.fragment_main,container,false);
         gv_main = (GridView) mView.findViewById(R.id.gv_main);
@@ -243,44 +246,56 @@ public class MainFragment extends Fragment implements
 
         }
 
-        private List<MovieBean> parseMovieInfoFromJson(String jsonStr) throws JSONException {
-            List<MovieBean> movies = null;
-            Log.i(TAG, "parseMovieInfoFromJson: start to parse");
+        private void parseMovieInfoFromJson(String jsonStr) throws JSONException {
+            Log.v(TAG, "parseMovieInfoFromJson: start to parse and insert");
             if(!TextUtils.isEmpty(jsonStr)){
-                JSONObject jsonObj = new JSONObject(jsonStr);
-                JSONArray movieArray = jsonObj.getJSONArray(MOVIES_RESULT);
-                movies = new ArrayList<>();
-                for (int i = 0; i < movieArray.length(); i++) {
-                    MovieBean movie = new MovieBean();
-                    JSONObject movieJson = movieArray.getJSONObject(i);
-                    movie.setMovieName(movieJson.getString(TITLE));
-                    movie.setScore((float) movieJson.getDouble(RATED_AVER));
-                    movie.setFirstShowTime(movieJson.getString(RELEASE_DATE));
-                    movie.setIntroduction(movieJson.getString(OVERVIEW));
-                    movie.setPosterUrl(movieJson.getString(POSTER_PATH));
-                    movie.setMovieId(movieJson.getInt(ID));
-                    movies.add(movie);
-                }
+                new AsyncTask<String,Void,Void>(){
+                    List<MovieBean> movies = null;
+                    @Override
+                    protected Void doInBackground(String... params) {
+                        String jsonStr = params[0];
+                        JSONObject jsonObj = null;
+                        try {
+                            jsonObj = new JSONObject(jsonStr);
+                            JSONArray movieArray = jsonObj.getJSONArray(MOVIES_RESULT);
+                            movies = new ArrayList<>();
+                            MovieBean movie = null;
+                            for (int i = 0; i < movieArray.length(); i++) {
+                                movie = new MovieBean();
+                                JSONObject movieJson = movieArray.getJSONObject(i);
+                                movie.setMovieName(movieJson.getString(TITLE));
+                                movie.setScore((float) movieJson.getDouble(RATED_AVER));
+                                movie.setFirstShowTime(movieJson.getString(RELEASE_DATE));
+                                movie.setIntroduction(movieJson.getString(OVERVIEW));
+                                movie.setPosterUrl(movieJson.getString(POSTER_PATH));
+                                movie.setMovieId(movieJson.getInt(ID));
+                                movies.add(movie);
+                            }
 
-                ContentValues[] insertDatas = new ContentValues[movies.size()];
-                ContentValues insertData = null;
-                for (int i = 0; i < insertDatas.length; i++) {
-                    MovieBean movie = movies.get(i);
-                    insertData = new ContentValues();
-                    insertData.put(MovieContract.MovieEntry.COLUMN_TITLE,movie.getMovieName());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,movie.getMovieId());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,movie.getFirstShowTime());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_RATED_AVER,movie.getScore());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPosterUrl());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,movie.getIntroduction());
-                    insertData.put(MovieContract.MovieEntry.COLUMN_IS_LIKE, MovieContract.MovieEntry.NOT_LIKED);
-                    insertDatas[i] = insertData;
-                }
-                getActivity().getContentResolver().bulkInsert(
-                        MovieContract.MovieEntry.CONTENT_URI, insertDatas);
-                return movies;
+                            ContentValues[] insertDatas = new ContentValues[movies.size()];
+                            ContentValues insertData = null;
+                            for (int i = 0; i < insertDatas.length; i++) {
+                                movie = movies.get(i);
+                                insertData = new ContentValues();
+                                insertData.put(MovieContract.MovieEntry.COLUMN_TITLE,movie.getMovieName());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,movie.getMovieId());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,movie.getFirstShowTime());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_RATED_AVER,movie.getScore());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPosterUrl());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,movie.getIntroduction());
+                                insertData.put(MovieContract.MovieEntry.COLUMN_IS_LIKE, MovieContract.MovieEntry.NOT_LIKED);
+                                insertDatas[i] = insertData;
+                            }
+                            getActivity().getContentResolver().bulkInsert(
+                                    MovieContract.MovieEntry.CONTENT_URI, insertDatas);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                }.execute(jsonStr);
             }
-            return null;
+
         }
     }
 

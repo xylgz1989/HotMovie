@@ -41,9 +41,8 @@ public class MovieContract {
         }
 
 
-        public static final Uri buildQueryMovieUriByType() {
-            Uri newUri = CONTENT_URI.buildUpon().appendPath("type").build();
-            return newUri;
+        public static Uri buildQueryMovieUriByType() {
+            return CONTENT_URI.buildUpon().appendPath("type").build();
         }
 
         public static final String COLUMN_POSTER_PATH = "poster_path";

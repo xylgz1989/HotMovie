@@ -8,6 +8,7 @@
     <string name="overview">简介</string>
     <string name="comments">评论 </string>
     <string name="cannot_connect_server">暂时连不上服务器</string>
+    <string name="loading_comments">评论加载中</string>
 
     <string name="acty_detail">电影详情</string>
     <string name="dialog_query_movie">正在查询电影，请稍后</string>

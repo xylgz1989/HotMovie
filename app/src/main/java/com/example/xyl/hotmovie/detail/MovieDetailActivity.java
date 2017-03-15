@@ -6,7 +6,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -30,12 +29,9 @@ import com.gigamole.navigationtabstrip.NavigationTabStrip;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
-import com.xyl.tool.FileUtil;
 import com.xyl.tool.NetworkTool;
 import com.xyl.tool.asyncInterface.AsyncTaskCompleteListener;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -46,10 +42,7 @@ import java.util.List;
 public class MovieDetailActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, NavigationTabStrip.OnTabStripSelectedIndexListener {
     private ImageView iv_poster;
     private TextView tv_score;
-    private RatingBar rb_score;
     private TextView tv_showTime;
-    private TextView tv_actors;
-    private TextView tv_introduce;
     private TextView tv_title;
     private TextView tv_runtime;
     private RecyclerView rv_trailer;
@@ -84,25 +77,22 @@ public class MovieDetailActivity extends Activity implements LoaderManager.Loade
         if(fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT) == null){
             overviewFrag = new OverviewFragment();
             overviewFrag.setArguments(args);
-            transaction.add(R.id.container_detail,overviewFrag,OVERVIEW_FRAGMENT).commit();
+            transaction.replace(R.id.container_detail,overviewFrag,OVERVIEW_FRAGMENT).commit();
         }else{
             overviewFrag = fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT);
-            transaction.show(overviewFrag).commit();
+            transaction.replace(R.id.container_detail,overviewFrag).commit();
         }
         tabStrip.setOnTabStripSelectedIndexListener(this);
-//        Fragment commentsFragment = new CommentsFragment();
-//        commentsFragment.setArguments(args);
-//        transaction.add(R.id.container_detail,commentsFragment,REVIEWS_FRAGMENT).commit();
     }
 
     private void initViews() {
-        tv_actors = (TextView) findViewById(R.id.tv_actors);
-        tv_introduce = (TextView) findViewById(R.id.tv_introduce);
+        TextView tv_actors = (TextView) findViewById(R.id.tv_actors);
+        TextView tv_introduce = (TextView) findViewById(R.id.tv_introduce);
 
         tv_score = (TextView) findViewById(R.id.tv_score);
         tv_showTime = (TextView) findViewById(R.id.tv_show_time);
         iv_poster = (ImageView) findViewById(R.id.iv_movie_poster);
-        rb_score = (RatingBar) findViewById(R.id.rb_score);
+        RatingBar rb_score = (RatingBar) findViewById(R.id.rb_score);
         tv_title = (TextView) findViewById(R.id.tv_title);
         tv_runtime = (TextView) findViewById(R.id.tv_run_time);
         rv_trailer = (RecyclerView) findViewById(R.id.rv_trailer);
@@ -125,9 +115,10 @@ public class MovieDetailActivity extends Activity implements LoaderManager.Loade
         tabStrip.setStripColor(Color.RED);
         tabStrip.setStripWeight(6);
         tabStrip.setStripFactor(2);
+        tabStrip.setTabIndex(0);
         tabStrip.setStripType(NavigationTabStrip.StripType.LINE);
         tabStrip.setStripGravity(NavigationTabStrip.StripGravity.BOTTOM);
-        tabStrip.setTypeface("fonts/typeface.ttf");
+//        tabStrip.setTypeface("fonts/typeface.ttf");
         tabStrip.setCornersRadius(3);
         tabStrip.setAnimationDuration(300);
         tabStrip.setInactiveColor(Color.GRAY);
@@ -209,24 +200,10 @@ public class MovieDetailActivity extends Activity implements LoaderManager.Loade
 
             String posterUrl = data.getString(data.getColumnIndex(
                     MovieContract.MovieEntry.COLUMN_POSTER_PATH));
-            Picasso mPo = Picasso.with(this);
-            RequestCreator requestCreator = null;
-            String picName = posterUrl.substring(1);
-            Context mCtx = this;
-            File cachedImg = new File(FileUtil.getAvailableCacheDir(mCtx), picName);
-            if (cachedImg.exists() && cachedImg.canRead()) {
-                //if cache image file exists,load local file
-                requestCreator = mPo.load(cachedImg);
-                Log.v(TAG, "load poster from cached file");
-            } else {
-                //or load from server
-                StringBuilder sbuf = new StringBuilder();
-                sbuf.append(BuildConfig.MOVIEDB_POSTER_BASE_URL).append(mCtx.getString(R.string.screen_width));
-                sbuf.append(posterUrl);
-                Log.v(TAG, "poster url=" + sbuf.toString());
-                requestCreator = mPo.load(sbuf.toString());
-            }
-            requestCreator.placeholder(R.mipmap.ic_launcher).into(iv_poster);
+            StringBuilder sbuf = new StringBuilder();
+            sbuf.append(BuildConfig.MOVIEDB_POSTER_BASE_URL).append(getString(R.string.screen_width));
+            sbuf.append(posterUrl);
+            Picasso.with(this).load(sbuf.toString()).placeholder(R.mipmap.ic_launcher).into(iv_poster);
         }else{
             //should display something if no movie detail
 
@@ -251,46 +228,52 @@ public class MovieDetailActivity extends Activity implements LoaderManager.Loade
         args.putInt(getString(R.string.movie_id_key),movieId);
         args.putInt(getString(R.string.insert_id_key),insertId);
         Fragment frag = null;
-        switch (index){
+        switch (index) {
             case 0:
-                if (fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT) != null){
+                if (fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT) != null) {
                     frag = fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT);
-                }else{
+                } else {
                     frag = new OverviewFragment();
                     frag.setArguments(args);
                 }
                 break;
             case 1:
-                Fragment overviewFrag = null;
-                if (fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT) != null){
-                    overviewFrag = fragMgr.findFragmentByTag(OVERVIEW_FRAGMENT);
-                    transaction.hide(overviewFrag);
-                }
-                if (fragMgr.findFragmentByTag(REVIEWS_FRAGMENT) != null){
+                if (fragMgr.findFragmentByTag(REVIEWS_FRAGMENT) != null) {
                     frag = fragMgr.findFragmentByTag(REVIEWS_FRAGMENT);
-                }else{
+                } else {
                     frag = new CommentsFragment();
                     frag.setArguments(args);
-                    transaction.add(R.id.container_detail,frag);
                 }
                 break;
         }
-        transaction.show(/*R.id.container_detail,*/frag).commit();
+        transaction.replace(R.id.container_detail, frag).commit();
     }
 
     class MovieRuntimeTaskListener implements AsyncTaskCompleteListener{
 
         @Override
-        public void onTaskComplete(Object result) {
+        public void onTaskComplete(final Object result) {
             if (result != null && result instanceof Integer) {
-                Uri movieUri = MovieContract.MovieEntry.buildMovieItemUri(insertId);
-                String selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
-                ContentValues cv = new ContentValues();
-                int runTime = (int) result;
-                cv.put(MovieContract.MovieEntry.COLUMN_RUN_TIME,runTime);
-                getContentResolver().update(movieUri, cv, selection,
-                        new String[]{String.valueOf(movieId)});
-                tv_runtime.setText(result.toString()+getString(R.string.unit_minute));
+                new AsyncTask<Void,Void,Void>(){
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Uri movieUri = MovieContract.MovieEntry.buildMovieItemUri(insertId);
+                        String selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
+                        ContentValues cv = new ContentValues();
+                        int runTime = (int) result;
+                        cv.put(MovieContract.MovieEntry.COLUMN_RUN_TIME,runTime);
+                        getContentResolver().update(movieUri, cv, selection,
+                                new String[]{String.valueOf(movieId)});
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        tv_runtime.setText(result.toString()+getString(R.string.unit_minute));
+                    }
+                }.execute();
+
             }
         }
 
@@ -327,13 +310,28 @@ public class MovieDetailActivity extends Activity implements LoaderManager.Loade
                 newStatus = MovieContract.MovieEntry.IS_LIKED;
                 break;
         }
-        Uri movieUri = MovieContract.MovieEntry.buildMovieItemUri(insertId);
-        String selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
-        ContentValues cv = new ContentValues();
-        cv.put(MovieContract.MovieEntry.COLUMN_IS_LIKE,newStatus);
-        getContentResolver().update(movieUri, cv, selection,
-                new String[]{String.valueOf(movieId)});
-        likeStatus = newStatus;
-        getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER,null,this);
+
+        final int likeStatus = newStatus;
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                Uri movieUri = MovieContract.MovieEntry.buildMovieItemUri(insertId);
+                String selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
+                ContentValues cv = new ContentValues();
+                cv.put(MovieContract.MovieEntry.COLUMN_IS_LIKE,likeStatus);
+                getContentResolver().update(movieUri, cv, selection,
+                        new String[]{String.valueOf(movieId)});
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER,null,
+                        MovieDetailActivity.this);
+            }
+        }.execute();
+
+
     }
 }
