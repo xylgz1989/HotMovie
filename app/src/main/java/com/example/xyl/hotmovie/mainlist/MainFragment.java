@@ -3,6 +3,7 @@ package com.example.xyl.hotmovie.mainlist;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.AsyncQueryHandler;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -134,9 +135,23 @@ public class MainFragment extends Fragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View mView = inflater.inflate(R.layout.fragment_main,container,false);
+        gv_main = (GridView) mView.findViewById(R.id.gv_main);
         String type = PreferenceTool.getString(getActivity(),
                 getResources().getString(R.string.pref_sort_key),
                 getResources().getString(R.string.pref_sort_value_popular));
+        /*
+        * see http://blog.csdn.net/yuzhiboyi/article/details/8093408
+         */
+        AsyncQueryHandler queryHandler = new AsyncQueryHandler(getActivity().getContentResolver()) {
+            @Override
+            protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+                super.onQueryComplete(token, cookie, cursor);
+                movieAdapter = new MovieAdapter(getActivity(),cursor,0);
+                gv_main.setAdapter(movieAdapter);
+
+            }
+        };
         Uri typeUri = MovieContract.MovieEntry.buildQueryMovieUriByType();
         String[] projection = new String[]{
                 MovieContract.MovieEntry._ID,
@@ -149,17 +164,12 @@ public class MainFragment extends Fragment implements
             sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC ";
         }else if(type.equals(getResources().getString(R.string.pref_sort_value_toprated))){
             sortOrder = MovieContract.MovieEntry.COLUMN_RATED_AVER + " DESC ";
+        }else if(type.equals(getResources().getString(R.string.pref_sort_value_favourite))){
+            selection = MovieContract.MovieEntry.COLUMN_IS_LIKE + " = ? ";
+            selectionArgs = new String[]{String.valueOf(MovieContract.MovieEntry.IS_LIKED)};
         }
-        Cursor cur = getActivity().getContentResolver().query(typeUri,projection,selection,
-                selectionArgs, sortOrder);
-        cur.close();
-        movieAdapter = new MovieAdapter(getActivity(),cur,0);
-        View mView = inflater.inflate(R.layout.fragment_main,container,false);
-        gv_main = (GridView) mView.findViewById(R.id.gv_main);
-        gv_main.setAdapter(movieAdapter);
-        if(savedInstanceState != null &&
-                savedInstanceState.getSerializable(DATA) != null){
-        }
+        queryHandler.startQuery(0,0,typeUri,projection,selection,selectionArgs,sortOrder);
+
         return mView;
     }
 
