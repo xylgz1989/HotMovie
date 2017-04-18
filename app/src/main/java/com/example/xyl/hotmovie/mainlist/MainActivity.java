@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.xyl.hotmovie.R;
+import com.example.xyl.hotmovie.sync.MovieSyncAdapter;
 
 public class MainActivity extends Activity {
 
@@ -16,11 +17,16 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         Log.i(getClass().getSimpleName(),"on create");
         FragmentManager fragMgr = getFragmentManager();
-        if(fragMgr.findFragmentByTag("main") == null){
-            fragMgr.beginTransaction().add(R.id.container_main,
-                    new MainFragment(),"main").commit();
+        if(findViewById(R.id.container_main) != null){
+            if(savedInstanceState == null){
+//                fragMgr.findFragmentByTag("main") == null)
+                fragMgr.beginTransaction().replace(R.id.container_main,
+                        new MainFragment(),"main").commit();
+            }
+            MovieSyncAdapter.initializeSyncAdapter(this);
         }
-    }
+
+        }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

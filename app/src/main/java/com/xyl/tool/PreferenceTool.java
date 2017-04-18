@@ -35,6 +35,14 @@ public class PreferenceTool {
         getDefaultPref(ctx).edit().putBoolean(key,value).commit();
     }
 
+    public static void setLong(Context ctx,String key,long value){
+        getDefaultPref(ctx).edit().putLong(key, value).commit();
+    }
+
+    public static long getLong(Context ctx,String key,long defValue){
+        return getDefaultPref(ctx).getLong(key, defValue);
+    }
+
     private static SharedPreferences getDefaultPref(Context ctx){
         return ctx.getSharedPreferences(
                 ctx.getPackageName()+"_preferences", Context.MODE_PRIVATE);

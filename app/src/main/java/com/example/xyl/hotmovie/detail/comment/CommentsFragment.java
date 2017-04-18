@@ -130,6 +130,11 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
                     Log.i(TAG, "onTaskComplete: new comments size="+newComments.size());
                     comments.addAll(newComments);
+                    if(comments.size() == 0){
+                        StringBuilder sbuf = new StringBuilder();
+                        sbuf.append(getString(R.string.no)).append(getString(R.string.comments));
+                        Toast.makeText(getActivity(), sbuf.toString(), Toast.LENGTH_SHORT).show();
+                    }
                     CommentAdapter commentAdapter = new CommentAdapter(comments);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
                         rv_comments.setAdapter(commentAdapter);

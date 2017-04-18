@@ -28,6 +28,7 @@ import com.example.xyl.hotmovie.R;
 import com.example.xyl.hotmovie.data.MovieContract;
 import com.example.xyl.hotmovie.entity.MovieBean;
 import com.example.xyl.hotmovie.setting.SettingActivity;
+import com.example.xyl.hotmovie.sync.MovieSyncAdapter;
 import com.xyl.tool.NetworkTool;
 import com.xyl.tool.PreferenceTool;
 import com.xyl.tool.asyncInterface.AsyncTaskCompleteListener;
@@ -53,6 +54,7 @@ public class MainFragment extends Fragment implements
     private MovieAdapter movieAdapter;
     public static final String DATA = "data";
     public static final int MOVIES_LOADER = 128;
+    private int pageNum = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,13 +122,14 @@ public class MainFragment extends Fragment implements
         boolean isOnline = NetworkTool.isOnline(getActivity());
         boolean isLikeType = type.equals(getResources().getString(R.string.pref_sort_value_favourite));
         if(isOnline && !isLikeType){
-            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-            GetMovieTask task = new GetMovieTask(
-                    getActivity(),new FetchMovieTaskCompleteListener());
-            task.execute("");
-            pd = new ProgressDialog(getActivity());
-            pd.setMessage(getString(R.string.dialog_query_movie));
-            pd.show();
+//            GetMovieTask task = new GetMovieTask(
+//                    getActivity(),new FetchMovieTaskCompleteListener());
+//            task.execute("");
+//            pd = new ProgressDialog(getActivity());
+//            pd.setMessage(getString(R.string.dialog_query_movie));
+//            pd.show();
+            MovieSyncAdapter.syncImmediately(getActivity(),pageNum);
+//            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         }else{
             getLoaderManager().restartLoader(MOVIES_LOADER,null,this);
         }
@@ -192,6 +195,7 @@ public class MainFragment extends Fragment implements
         Uri typeUri = MovieContract.MovieEntry.buildQueryMovieUriByType();
         String[] projection = new String[]{
                 MovieContract.MovieEntry._ID,
+                MovieContract.MovieEntry.COLUMN_TITLE,
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID,
                 MovieContract.MovieEntry.COLUMN_POSTER_PATH};
         String sortOrder = null;
@@ -213,6 +217,7 @@ public class MainFragment extends Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data != null && data.getCount() > 0){
+            Log.d(TAG, "onLoadFinished: cursor obj is"+data.toString());
             movieAdapter.swapCursor(data);
         }else{
             Toast.makeText(getActivity(),R.string.no_data,Toast.LENGTH_SHORT).show();

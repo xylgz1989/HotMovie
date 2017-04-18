@@ -9,15 +9,29 @@
     <string name="comments">评论 </string>
     <string name="cannot_connect_server">暂时连不上服务器</string>
     <string name="loading_comments">评论加载中</string>
+    <string name="no">暂无</string>
 
     <string name="acty_detail">电影详情</string>
     <string name="dialog_query_movie">正在查询电影，请稍后</string>
     <string name="pref_sort_label">排序方式</string>
     <string name="unit_minute">分钟</string>
+
+    <string name="pref_sync_rate_label">同步频率</string>
+    <string name="pref_movie_rank_notification_switch_label">电影排名更新通知</string>
+    <string name="open">开启</string>
+    <string name="close">关闭</string>
+
     <string-array name="pref_sort_arrays">
         <item>最受欢迎</item>
         <item>最高评分</item>
         <item>收藏</item>
+    </string-array>
+
+    <string-array name="pref_sync_rate_arrays">
+        <item>3小时</item>
+        <item>6小时</item>
+        <item>12小时</item>
+        <item>24小时</item>
     </string-array>
 
     <string name="pref_lang_label">语言</string>

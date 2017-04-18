@@ -17,6 +17,7 @@
     <string name="sort_pref_changed" translatable="false">sort pref changed</string>
     <string name="overview">overview</string>
     <string name="comments">comments</string>
+    <string name="no">no</string>
 
     <string name="pref_sort_label">Movie Sort By</string>
     <string name="pref_sort_key" translatable="false">movie rate</string>
@@ -29,6 +30,22 @@
     <string name="insert_id_key" translatable="false">insert_id</string>
     <string name="screen_width" translatable="false">w342</string>
     <string name="is_first" translatable="false">is_first</string>
+    <string name="page_num" translatable="false">page_num</string>
+
+    <string name="hour">hour</string>
+    <string name="pref_sync_rate_label">Synchronize Rate</string>
+    <string name="pref_sync_rate_key" translatable="false">sync_rate</string>
+    <string name="pref_last_sync_time" translatable="false">last_sync_time</string>
+    <string name="pref_last_hot_movie_id" translatable="false">last_hot_movie_id</string>
+
+    <string name="pref_movie_rank_notification_switch_label">Movie Rank Notification Switcher</string>
+    <string name="pref_movie_rank_notification_switch_key" translatable="false">movie rank notification switcher</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">hotmovie.example.com</string>
+    <string name="content_authority">com.example.xyl.hotmovie</string>
 
     <string-array name="pref_sort_arrays">
         <item>Popular</item>
@@ -40,6 +57,20 @@
         <item>popular</item>
         <item>top_rated</item>
         <item>favourite</item>
+    </string-array>
+
+    <string-array name="pref_sync_rate_arrays">
+        <item>3h</item>
+        <item>6h</item>
+        <item>12h</item>
+        <item>24h</item>
+    </string-array>
+
+    <string-array name="pref_sync_rate_value_arrays">
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
     </string-array>
 
     <string name="pref_lang_label">Language</string>
